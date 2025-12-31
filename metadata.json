@@ -1,0 +1,7 @@
+{
+  "name": "OptiTrip",
+  "description": "AI-powered travel itinerary optimizer. Stop wasting hours planning trips. Get perfect, personalized itineraries in 60 seconds.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
