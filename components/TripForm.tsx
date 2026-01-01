@@ -1,177 +1,133 @@
 
 import React, { useState } from 'react';
-import { TripInputs } from '../types';
+import { ProtocolInputs } from '../types';
 
 interface TripFormProps {
-  onSubmit: (inputs: TripInputs) => void;
+  onSubmit: (inputs: ProtocolInputs) => void;
   isLoading: boolean;
-  onDemo?: () => void; // Added to resolve the prop being passed from App.tsx.
+  onDemo?: () => void;
 }
 
 const TripForm: React.FC<TripFormProps> = ({ onSubmit, isLoading, onDemo }) => {
-  const [inputs, setInputs] = useState<TripInputs>({
+  const [inputs, setInputs] = useState<ProtocolInputs>({
     destination: '',
     startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date(Date.now() + 432000000).toISOString().split('T')[0],
-    interests: [],
-    travelStyle: 'Balanced',
-    budget: 'Moderate',
-    travelerType: 'Solo',
-    pace: 'Balanced',
-    hotelLocation: ''
+    endDate: new Date(Date.now() + 864000000).toISOString().split('T')[0],
+    biologicalGoal: 'Cellular Regeneration',
+    medicalProtocol: 'None',
+    luxuryTier: 'Sovereign',
+    specificNeeds: []
   });
-
-  const [currentInterest, setCurrentInterest] = useState('');
-
-  const handleAddInterest = () => {
-    if (currentInterest && !inputs.interests.includes(currentInterest)) {
-      setInputs({ ...inputs, interests: [...inputs.interests, currentInterest] });
-      setCurrentInterest('');
-    }
-  };
-
-  const handleRemoveInterest = (interest: string) => {
-    setInputs({ ...inputs, interests: inputs.interests.filter(i => i !== interest) });
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputs.destination) return alert("Where would you like to go?");
+    if (!inputs.destination) return;
     onSubmit(inputs);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-slate-900/80 p-6 md:p-8 rounded-[2.5rem] border border-white/5 shadow-2xl backdrop-blur-sm">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-2xl font-black text-white">Your Trip Details</h2>
-        <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Inclusive AI</span>
-      </div>
-
-      <div className="space-y-5">
-        <div className="relative group">
-          <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Destination</label>
-          <input
-            type="text"
-            placeholder="e.g. Rome, Bali, Tokyo"
-            aria-label="Travel Destination"
-            className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white font-bold transition-all placeholder:text-slate-700"
-            value={inputs.destination}
-            onChange={(e) => setInputs({ ...inputs, destination: e.target.value })}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Who is going?</label>
-            <select
-              className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white font-bold"
-              value={inputs.travelerType}
-              onChange={(e) => setInputs({ ...inputs, travelerType: e.target.value })}
-            >
-              <option>Solo Traveler</option>
-              <option>Couple</option>
-              <option>Family with Kids</option>
-              <option>Seniors (65+)</option>
-              <option>Mobility Assisted</option>
-              <option>Group of Friends</option>
-            </select>
+    <div className="relative group">
+      {/* Decorative Outer Glow */}
+      <div className="absolute inset-0 bg-cyan-500/5 blur-[100px] rounded-[3rem] transition-all duration-1000 group-hover:bg-cyan-500/10"></div>
+      
+      <form 
+        onSubmit={handleSubmit} 
+        className="relative z-10 glass-card p-12 rounded-[3.5rem] border border-white/10 space-y-10"
+      >
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <h2 className="text-4xl font-black text-white tracking-tighter uppercase">Biological Intake</h2>
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+              <p className="text-cyan-500 text-[9px] font-black uppercase tracking-[0.4em]">Protocol Scanning v5.0 Active</p>
+            </div>
           </div>
-          <div>
-            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Desired Pace</label>
-            <select
-              className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white font-bold"
-              value={inputs.pace}
-              onChange={(e) => setInputs({ ...inputs, pace: e.target.value })}
-            >
-              <option>Leisurely (Relaxed)</option>
-              <option>Balanced</option>
-              <option>Active (Busy)</option>
-              <option>Intense (Full Days)</option>
-            </select>
+          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center group-hover:border-cyan-500/30 transition-all duration-500">
+             <svg className="w-8 h-8 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+             </svg>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Budget</label>
-            <select
-              className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white font-bold"
-              value={inputs.budget}
-              onChange={(e) => setInputs({ ...inputs, budget: e.target.value })}
-            >
-              <option>Shoestring (Free/Cheap)</option>
-              <option>Budget (Mindful)</option>
-              <option>Moderate (Comfort)</option>
-              <option>Luxury (Premium)</option>
-              <option>Ultra-Luxe (Exclusive)</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Travel Style</label>
-            <select
-              className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white font-bold"
-              value={inputs.travelStyle}
-              onChange={(e) => setInputs({ ...inputs, travelStyle: e.target.value })}
-            >
-              <option>Backpacker</option>
-              <option>Cultural/History</option>
-              <option>Foodie</option>
-              <option>Nature & Outdoor</option>
-              <option>Photography</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Interests & Needs</label>
-          <div className="flex gap-2">
+        <div className="space-y-8">
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2">Primary Clinical Node</label>
             <input
               type="text"
-              placeholder="e.g. Ramen, Accessibility, Low Sensory"
-              className="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 text-white font-bold"
-              value={currentInterest}
-              onChange={(e) => setCurrentInterest(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddInterest())}
+              placeholder="GLOBAL GEOGRAPHY OR CLINIC NAME"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 text-white font-bold tracking-tight focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.08] transition-all"
+              value={inputs.destination}
+              onChange={(e) => setInputs({ ...inputs, destination: e.target.value })}
             />
-            <button
-              type="button"
-              onClick={handleAddInterest}
-              className="bg-slate-800 hover:bg-slate-700 text-white px-6 rounded-2xl font-black transition-all"
-            >
-              +
-            </button>
           </div>
-          <div className="flex flex-wrap gap-2 mt-3">
-            {inputs.interests.map((interest) => (
-              <span key={interest} className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2">
-                {interest}
-                <button type="button" onClick={() => handleRemoveInterest(interest)} className="hover:text-white transition-colors">×</button>
-              </span>
-            ))}
+
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2">Intention</label>
+              <select
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-white font-bold text-sm focus:outline-none focus:border-cyan-500/50 transition-all appearance-none cursor-pointer"
+                value={inputs.biologicalGoal}
+                onChange={(e) => setInputs({ ...inputs, biologicalGoal: e.target.value as any })}
+              >
+                <option className="bg-slate-900">Cellular Regeneration</option>
+                <option className="bg-slate-900">Cognitive Peak</option>
+                <option className="bg-slate-900">Stress Deceleration</option>
+                <option className="bg-slate-900">Athletic Recovery</option>
+              </select>
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2">Service Tier</label>
+              <select
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-white font-bold text-sm focus:outline-none focus:border-cyan-500/50 transition-all appearance-none cursor-pointer"
+                value={inputs.luxuryTier}
+                onChange={(e) => setInputs({ ...inputs, luxuryTier: e.target.value as any })}
+              >
+                <option className="bg-slate-900">Sovereign</option>
+                <option className="bg-slate-900">Ultra-Luxe</option>
+                <option className="bg-slate-900">Clinical Focus</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2">Target Protocol</label>
+            <input
+              type="text"
+              placeholder="STEM CELLS / NAD+ / HYPERBARIC / ETC"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 text-white font-bold tracking-tight focus:outline-none focus:border-cyan-500/50 transition-all"
+              value={inputs.medicalProtocol}
+              onChange={(e) => setInputs({ ...inputs, medicalProtocol: e.target.value })}
+            />
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col gap-3 pt-4">
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-white py-5 rounded-2xl font-black text-xl transition-all shadow-xl shadow-cyan-950/50 active:scale-95"
+          className="relative w-full py-7 bg-white text-black rounded-[2rem] font-black text-[11px] uppercase tracking-[0.3em] overflow-hidden group/btn shadow-[0_20px_40px_rgba(255,255,255,0.05)] active:scale-[0.98] transition-all disabled:opacity-50"
         >
-          {isLoading ? "Tailoring your trip..." : "Create My Plan"}
+          <span className="relative z-10 flex items-center justify-center gap-4">
+            {isLoading ? "Synchronizing Clinical Data..." : "Deploy Sequence"}
+            {!isLoading && (
+              <svg className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            )}
+          </span>
+          <div className="absolute inset-0 bg-cyan-400 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500"></div>
         </button>
-        
+
         {onDemo && (
-          <button
-            type="button"
-            onClick={onDemo}
-            className="w-full text-slate-500 hover:text-cyan-400 text-[11px] font-black uppercase tracking-[0.2em] py-2 transition-colors"
+          <button 
+            type="button" 
+            onClick={onDemo} 
+            className="w-full text-slate-600 hover:text-cyan-500 text-[10px] font-black uppercase tracking-[0.4em] transition-colors"
           >
-            Just show me a demo
+            Run Demo Analysis (SHA Protocol)
           </button>
         )}
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 

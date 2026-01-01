@@ -1,6 +1,6 @@
 {
-  "name": "OptiTrip",
-  "description": "AI-powered travel itinerary optimizer. Stop wasting hours planning trips. Get perfect, personalized itineraries in 60 seconds.",
+  "name": "AuraNodes",
+  "description": "The world's first Biological Travel Strategist. Architecting high-performance travel sequences around the planet's most advanced cellular repair and longevity protocols.",
   "requestFramePermissions": [
     "geolocation"
   ]

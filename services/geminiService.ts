@@ -1,20 +1,28 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Itinerary, TripInputs } from "../types";
+import { Itinerary, ProtocolInputs } from "../types";
 
-export const generateItinerary = async (inputs: TripInputs): Promise<Itinerary> => {
-  // Creating a new instance right before the call as per instructions for dynamic key management.
+// generateItinerary creates a structured health itinerary using Gemini 3 Pro with search grounding.
+export const generateItinerary = async (inputs: ProtocolInputs): Promise<Itinerary> => {
+  // Always initialize GoogleGenAI inside the function to capture the current API_KEY.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
-    Destination: ${inputs.destination}
+    Architect a "Longevity & Biological Performance" itinerary for an ultra-high-net-worth individual.
+    Location: ${inputs.destination}
     Dates: ${inputs.startDate} to ${inputs.endDate}
-    Traveler Profile: ${inputs.travelerType}
-    Pace: ${inputs.pace}
-    Interests: ${inputs.interests.join(', ')}
-    Budget: ${inputs.budget}
-    Travel Style: ${inputs.travelStyle}
-    Base Hotel: ${inputs.hotelLocation || 'Not specified'}
+    Biological Goal: ${inputs.biologicalGoal}
+    Target Medical Protocol: ${inputs.medicalProtocol}
+    Luxury Tier: ${inputs.luxuryTier}
+    Custom Requirements: ${inputs.specificNeeds.join(', ')}
+
+    CRITICAL INSTRUCTIONS:
+    1. CLINICAL SCOUTING: Use Google Search to find REAL, top-tier longevity clinics, bio-hacking centers, or private medical facilities in ${inputs.destination}.
+    2. BIO-IMPACT: For every activity, specify the "biological_impact" (e.g., "Autophagy promotion", "Vagal tone optimization").
+    3. BIOLOGICAL LOAD: Assign a "biological_load" score from -10 (highly restorative/sleeping) to +10 (medical procedure/high stress protocol).
+    4. LUXURY IMMERSION: Balance medical protocols with ultra-exclusive cultural experiences.
+    5. VERIFICATION: You MUST include the website (verification_url) for every clinical facility suggested.
+    6. DATA STRUCTURE: Categorize activities as 'Protocol' (Medical), 'Recovery' (Spa/Biohack), 'Immersion' (Cultural), or 'Nourishment' (Dietary).
   `;
 
   try {
@@ -23,23 +31,18 @@ export const generateItinerary = async (inputs: TripInputs): Promise<Itinerary> 
       contents: prompt,
       config: {
         thinkingConfig: { thinkingBudget: 32768 },
-        systemInstruction: `You are an inclusive travel refactoring engine. 
-        Your goal is to create itineraries that work for ANY walk of life, specifically focusing on the user's "Traveler Profile".
-        
-        CORE PRINCIPLES:
-        1. Accessibility: If the profile mentions mobility, prioritize wheelchair-accessible venues and flat paths.
-        2. Life-Stage Appropriate: Families with kids need frequent breaks and kid-friendly food. Seniors need comfortable transport and fewer stairs.
-        3. Budget-Inclusive: Respect the budget strictly. Shoestring means free parks/street food; Luxury means private tours.
-        4. Pace Control: Honor the "Leisurely" vs "Intense" pace.
-        
-        Output strictly valid JSON that strictly follows the provided schema. Do not include markdown code blocks.`,
+        tools: [{ googleSearch: {} }],
+        systemInstruction: `You are AuraNodes AI, the world's premier biological travel strategist. 
+        You specialize in "Cellular Tourism" for HNWIs. Your mission is to design itineraries that extend life-span. 
+        Always grounding your suggestions in real-world high-end medical data. Output strictly JSON matching the response schema.`,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            trip_name: { type: Type.STRING },
+            itinerary_name: { type: Type.STRING },
             destination: { type: Type.STRING },
-            inclusivity_summary: { type: Type.STRING, description: "How this trip specifically accommodates the traveler profile." },
+            biological_goal: { type: Type.STRING },
+            cellular_optimization_score: { type: Type.NUMBER },
             days: {
               type: Type.ARRAY,
               items: {
@@ -47,7 +50,7 @@ export const generateItinerary = async (inputs: TripInputs): Promise<Itinerary> 
                 properties: {
                   day_number: { type: Type.INTEGER },
                   date: { type: Type.STRING },
-                  summary: { type: Type.STRING },
+                  focus: { type: Type.STRING },
                   activities: {
                     type: Type.ARRAY,
                     items: {
@@ -58,47 +61,47 @@ export const generateItinerary = async (inputs: TripInputs): Promise<Itinerary> 
                         location: { type: Type.STRING },
                         description: { type: Type.STRING },
                         cost_estimate: { type: Type.STRING },
-                        reservation_flag: { type: Type.BOOLEAN },
+                        clinical_grade: { type: Type.BOOLEAN },
                         duration_mins: { type: Type.INTEGER },
-                        accessibility_note: { type: Type.STRING },
-                        tech_feature: { type: Type.STRING },
-                        efficiency_note: { type: Type.STRING },
+                        type: { type: Type.STRING, enum: ['Protocol', 'Recovery', 'Immersion', 'Nourishment'] },
+                        biological_impact: { type: Type.STRING },
+                        biological_load: { type: Type.NUMBER },
                         suitability_tags: { type: Type.ARRAY, items: { type: Type.STRING } },
-                        provider: { type: Type.STRING }
+                        verification_url: { type: Type.STRING }
                       },
-                      required: ["time", "activity", "location", "description", "cost_estimate", "reservation_flag", "duration_mins", "accessibility_note", "suitability_tags"]
+                      required: ["time", "activity", "location", "description", "type", "biological_impact", "biological_load"]
                     }
                   }
-                },
-                required: ["day_number", "summary", "activities"]
+                }
               }
             },
-            tech_travel_tips: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING }
-            }
+            longevity_hacks: { type: Type.ARRAY, items: { type: Type.STRING } }
           },
-          required: ["trip_name", "destination", "days", "inclusivity_summary"]
+          required: ["itinerary_name", "cellular_optimization_score", "days"]
         },
       },
     });
 
-    const text = response.text;
-    if (!text) throw new Error("No response from AI.");
-    
-    // Clean up potential markdown if it slipped through despite instructions
-    const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    // Handle search-grounded responses which may include conversational text outside the JSON.
+    const textOutput = response.text || "";
+    const jsonStart = textOutput.indexOf('{');
+    const jsonEnd = textOutput.lastIndexOf('}') + 1;
+    const jsonStr = jsonStart !== -1 && jsonEnd !== -1 ? textOutput.substring(jsonStart, jsonEnd) : textOutput;
     const data = JSON.parse(jsonStr);
     
+    // Extract grounding URLs for required web app display.
+    const groundingSources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
+      title: chunk.web?.title || 'Medical Source',
+      uri: chunk.web?.uri
+    })).filter((s: any) => s.uri) || [];
+
     return {
       ...data,
-      id: `trip_${Math.random().toString(36).substr(2, 9)}`,
+      id: `aura_${Math.random().toString(36).substr(2, 9)}`,
+      grounding_sources: groundingSources
     };
-  } catch (error: any) {
-    console.error("Gemini API Error:", error);
-    if (error.message?.includes("Requested entity was not found")) {
-      throw new Error("API_KEY_MISSING");
-    }
-    throw new Error(error.message || "Failed to generate itinerary. Please try again.");
+  } catch (error) {
+    console.error("AuraNodes Engine Error:", error);
+    throw error;
   }
 };
